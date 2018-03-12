@@ -1,21 +1,76 @@
 <!doctype html>
 <html lang="fr">
+
 <head>
   <meta charset="utf-8">
   <title>BarNme</title>
-  <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" type="text/css" href='/css/style.css' />
-  <script src="http://localhost:3124/socket.io/socket.io.js"></script>
-  <script type="text/javascript" src="/js/client.js"></script>
-</head>
-<body>
-    <h1>Page de login</h1>
-  	<form action="" id="loginform">
-        <input type="text" name="pseudo" id="username" placeholder="Nom d'utilisateur">
-        <input type="email" name="mail" id="email" placeholder="E-mail">
-        <input type="submit" value="Envoyer">
-    </form>
+  <link rel="stylesheet" href="/public/css/style.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous">
 
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <!-- On charge le script de socket io directement dans notre page html-->
+  <script src="http://localhost:3124/socket.io/socket.io.js"></script>
+  <script type="text/javascript" src="/public/js/client.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.js"></script>
+</head>
+
+<body>
+
+  <div class="login-overlay">
+    <form action="" id="loginform">
+      <div class="form-group">
+        <input type="text" name="pseudo" id="username" placeholder="Username" class="form-control">
+      </div>
+      <div class="form-group">
+        <input type="email" name="mail" id="email" placeholder="E-mail" class="form-control">
+      </div>
+      <input type="submit" value="Join chat" class="btn btn-primary form-control">
+    </form>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12 col-md-2 col-lg-1">
+        <h3>Liste des utilisateurs connectés</h3>
+        <ol id="users">
+
+        </ol>
+      </div>
+      <div class="col-12 col-md-10 col-lg-11">
+        <h3>Messages</h3>
+        <ul id="msglist">
+          <li id="msgtpl" style="display: none">
+            <div class="card">
+              <div class="card-body">
+                <h6 class="card-subtitle text-muted">{{user.username}}</h6>
+                <h5 class="card-title mb-2 text-muted">{{message}}</h5>
+                <p class="card-text">{{hour}}h{{min}} - {{day}}/{{month}}/{{year}}</p>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="row send-message">
+      <div class="col-12">
+        <form action="" id="msgform" class="form-inline">
+          <div class="form-group">
+            <input type="text" id="messageinput" class="form-control" placeholder="Enter your message here" />
+          </div>
+          <input type="submit" id="sendmsg" class="btn btn-primary" value="Send" />
+        </form>
+      </div>
+    </div>
+
+  </div>
 
 </body>
+
 </html>
