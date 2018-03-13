@@ -23,6 +23,10 @@ app.get('/login', function(req, res) {
     res.render('login.ejs');
 })
 
+app.get('/map', function(req, res) {
+    res.render('map.ejs');
+})
+
 app.use(function(req, res){
     res.setHeader('Content-Type', 'text/plain');
     res.status(404).send('Not Found');
