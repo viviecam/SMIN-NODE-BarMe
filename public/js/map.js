@@ -1,8 +1,13 @@
-//Coordonnées de Grenoble par défaut
+//Coordonnées de Grenoble par défaut, pour le chargement de l'appli
 var latitude = 45.1885;
 var longitude = 5.7245;
 var map;
 var me;
+var infowindow;
+var icons = {
+    beer: 'public/img/beer-icon2.png',
+    user: 'public/img/star-eyes-emoji.png'
+  };
 
 
 
@@ -14,7 +19,7 @@ $(document).ready(function () {
 
     // On initialise la map seule, centrée sur les coordonnées de Grenoble par défaut
     initMap(latitude, longitude);
-    
+
     //On demande l'accès à la geolocalisaton de l'utilisateur
     updateGeolocalisation();
 
@@ -38,9 +43,10 @@ function updateGeolocalisation() {
 function initMap(latitude, longitude) {
     me = { lat: latitude, lng: longitude };
     map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 14,
+        zoom: 15,
         center: me
     });
+    initBars();
 }
 
 // FONCTION D'INITIALISATION DU MARKER
@@ -48,9 +54,49 @@ function initMe(latitude, longitude) {
     me = { lat: latitude, lng: longitude };
     var marker = new google.maps.Marker({
         position: me,
-        map: map
+        map: map,
+        icon: icons['user']
     });
 }
+
+// FONCTIONS DE RECHERCHE DES BARS + AFFICHAGE DES MARQUEURS CORRESPONDANT
+// Requête vers l'API Google Places
+function initBars() {    
+    var gre = new google.maps.LatLng(45.1885, 5.7245);
+    infowindow = new google.maps.InfoWindow();
+    var service = new google.maps.places.PlacesService(map);
+    service.nearbySearch({
+        location: gre,
+        radius: 1000,
+        keyword: ['bar', 'Grenoble']
+        // type: ['bar', 'pub']
+    }, searchResults);
+}
+
+function searchResults(results, status) {
+    if (status === google.maps.places.PlacesServiceStatus.OK) {
+        for (var i = 0; i < results.length; i++) {
+            createMarkerResults(results[i]);
+            // console.log(results[i]);
+        }
+    }
+}
+
+function createMarkerResults(place) {
+    var placeLoc = place.geometry.location;
+    var marker = new google.maps.Marker({
+        map: map,
+        position: place.geometry.location,
+        icon: icons['beer']
+    });
+
+    google.maps.event.addListener(marker, 'click', function () {
+        infowindow.setContent(place.name);
+        infowindow.open(map, this);
+    });
+}
+
+
 
 // });
 
