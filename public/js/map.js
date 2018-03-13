@@ -1,17 +1,22 @@
-//Coordonnées de Grenoble par défaut, pour le chargement de l'appli
+// Coordonnées de Grenoble par défaut, pour le chargement de l'appli
 var latitude = 45.1885;
 var longitude = 5.7245;
+// Map
 var map;
+// Coordonnées de géolocalisation de l'utilisateur
 var me;
+// Bulle d'info sur les bars
 var infowindow;
+// Markers
 var icons = {
     beer: 'public/img/beer-icon2.png',
     user: 'public/img/star-eyes-emoji.png'
   };
 
 
-
+// Une fois que la page est chargée
 $(document).ready(function () {
+    // On définie la taille de la carte, en fonction de la taille de la fenêtre
     screenHeight = $(window).height();
     $("#map").css({
         height: screenHeight
@@ -25,6 +30,18 @@ $(document).ready(function () {
 
 });
 
+// FONCTION D'INITIALISATION DE LA MAP
+function initMap(latitude, longitude) {
+    me = { lat: latitude, lng: longitude };
+    map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 15,
+        center: me
+    });
+    // On charge ensuite les bars
+    initBars();
+}
+
+//FONCTION DE GEOLOCALISATION
 function updateGeolocalisation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function (position) {
@@ -39,17 +56,7 @@ function updateGeolocalisation() {
     }
 }
 
-// FONCTION D'INITIALISATION DE LA MAP
-function initMap(latitude, longitude) {
-    me = { lat: latitude, lng: longitude };
-    map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 15,
-        center: me
-    });
-    initBars();
-}
-
-// FONCTION D'INITIALISATION DU MARKER
+// FONCTION D'INITIALISATION DU MARKER DE GEOLOCALISATION
 function initMe(latitude, longitude) {
     me = { lat: latitude, lng: longitude };
     var marker = new google.maps.Marker({
@@ -60,28 +67,33 @@ function initMe(latitude, longitude) {
 }
 
 // FONCTIONS DE RECHERCHE DES BARS + AFFICHAGE DES MARQUEURS CORRESPONDANT
-// Requête vers l'API Google Places
 function initBars() {    
+    // On définie la zone sur Grenoble
     var gre = new google.maps.LatLng(45.1885, 5.7245);
+    // On initialise les bulles d'infos
     infowindow = new google.maps.InfoWindow();
+    // Requête vers l'API Google Place
     var service = new google.maps.places.PlacesService(map);
     service.nearbySearch({
         location: gre,
         radius: 1000,
         keyword: ['bar', 'Grenoble']
         // type: ['bar', 'pub']
-    }, searchResults);
+    }, searchResultsLoop);
 }
-
-function searchResults(results, status) {
+// Boucle sur les résultats de la recherche
+function searchResultsLoop(results, status) {
     if (status === google.maps.places.PlacesServiceStatus.OK) {
         for (var i = 0; i < results.length; i++) {
+            // On initialise le prix de la pinte de bière
+            results[i].beerPrice = '';
+            // Appel à la fonction pour créer un marker pour chaque bar trouvé
             createMarkerResults(results[i]);
-            // console.log(results[i]);
+            console.log(results[i]);
         }
     }
 }
-
+// Création des markers des bars
 function createMarkerResults(place) {
     var placeLoc = place.geometry.location;
     var marker = new google.maps.Marker({
@@ -91,49 +103,11 @@ function createMarkerResults(place) {
     });
 
     google.maps.event.addListener(marker, 'click', function () {
-        infowindow.setContent(place.name);
+        infowindow.setContent('<div><p><strong>' + place.name + '</strong><br>' +
+        place.vicinity  + "<br>" +
+        "Prix de la pinte de bière : " + place.beerPrice 
+        + "<br><br> <i>Vous êtes sur place ? Le prix n'est pas le bon?</i> <br> <button type=\"button\" class=\"btn btn-sm btn-warning\">Modifier le prix</button></p></div>");
+        // infowindow.setContent(place.beerPrice);
         infowindow.open(map, this);
     });
 }
-
-
-
-// });
-
-// function initialize() {
-//     var pyrmont = new google.maps.LatLng(-33.8665, 151.1956);
-
-//     var map = new google.maps.Map(document.getElementById('map'), {
-//       center: pyrmont,
-//       zoom: 15,
-//       scrollwheel: false
-//     });
-
-//     // Specify location, radius and place types for your Places API search.
-//     var request = {
-//       location: pyrmont,
-//       radius: '500',
-//       types: ['store']
-//     };
-
-//     // Create the PlaceService and send the request.
-//     // Handle the callback with an anonymous function.
-//     var service = new google.maps.places.PlacesService(map);
-//     service.nearbySearch(request, function(results, status) {
-//       if (status == google.maps.places.PlacesServiceStatus.OK) {
-//         for (var i = 0; i < results.length; i++) {
-//           var place = results[i];
-//           // If the request succeeds, draw the place location on
-//           // the map as a marker, and register an event to handle a
-//           // click on the marker.
-//           var marker = new google.maps.Marker({
-//             map: map,
-//             position: place.geometry.location
-//           });
-//         }
-//       }
-//     });
-//   }
-
-//   // Run the initialize function when the window has finished loading.
-//   google.maps.event.addDomListener(window, 'load', initialize);
