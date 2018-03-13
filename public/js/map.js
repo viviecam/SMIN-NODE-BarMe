@@ -1,13 +1,18 @@
+//Coordonnées de Grenoble par défaut
+var latitude = 45.1885;
+var longitude = 5.7245;
+var map;
+var me;
+
+
+
 $(document).ready(function () {
     screenHeight = $(window).height();
     $("#map").css({
         height: screenHeight
     });
 
-    //Coordonnées de Grenoble par défaut
-    var latitude = 45.1885;
-    var longitude = 5.7245;
-
+    // On initialise la map seule, centrée sur les coordonnées de Grenoble par défaut
     initMap(latitude, longitude);
     
     //On demande l'accès à la geolocalisaton de l'utilisateur
@@ -18,22 +23,29 @@ $(document).ready(function () {
 function updateGeolocalisation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function (position) {
-            console.log('geoloc');
+            // On récupère les coordonnées de l'utilisateur
             longitude = position.coords.longitude;
             latitude = position.coords.latitude;
+            // On recharge la map (pour la recentrer sur les nouveaux coordonnées)
             initMap(latitude, longitude);
+            // Et on charge le marqueur
+            initMe(latitude, longitude);
         });
     }
 }
 
-
+// FONCTION D'INITIALISATION DE LA MAP
 function initMap(latitude, longitude) {
-
-    var me = { lat: latitude, lng: longitude };
-    var map = new google.maps.Map(document.getElementById('map'), {
+    me = { lat: latitude, lng: longitude };
+    map = new google.maps.Map(document.getElementById('map'), {
         zoom: 14,
         center: me
     });
+}
+
+// FONCTION D'INITIALISATION DU MARKER
+function initMe(latitude, longitude) {
+    me = { lat: latitude, lng: longitude };
     var marker = new google.maps.Marker({
         position: me,
         map: map
