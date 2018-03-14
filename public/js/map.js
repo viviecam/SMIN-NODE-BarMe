@@ -10,7 +10,7 @@ var infowindow;
 // Markers
 var icons = {
     beer: 'public/img/beer-icon2.png',
-    user: 'public/img/star-eyes-emoji.png'
+    user: 'public/img/emoji.png'
   };
 
 
