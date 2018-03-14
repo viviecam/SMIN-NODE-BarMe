@@ -11,7 +11,7 @@ var infowindow;
 var icons = {
     beer: 'public/img/beer-icon2.png',
     user: 'public/img/emoji.png'
-  };
+};
 
 
 // Une fois que la page est chargée
@@ -67,7 +67,7 @@ function initMe(latitude, longitude) {
 }
 
 // FONCTIONS DE RECHERCHE DES BARS + AFFICHAGE DES MARQUEURS CORRESPONDANT
-function initBars() {    
+function initBars() {
     // On définie la zone sur Grenoble
     var gre = new google.maps.LatLng(45.1885, 5.7245);
     // On initialise les bulles d'infos
@@ -104,10 +104,90 @@ function createMarkerResults(place) {
 
     google.maps.event.addListener(marker, 'click', function () {
         infowindow.setContent('<div><p><strong>' + place.name + '</strong><br>' +
-        place.vicinity  + "<br>" +
-        "Prix de la pinte de bière : " + place.beerPrice 
-        + "<br><br> <i>Vous êtes sur place ? Le prix n'est pas le bon?</i> <br> <button type=\"button\" class=\"btn btn-sm btn-warning\">Modifier le prix</button></p></div>");
+            place.vicinity + "<br>" +
+            "Prix de la pinte de bière : " + place.beerPrice
+            // + "<br><br> <i>Vous êtes sur place ? Le prix n'est pas le bon?</i> <br> <button type=\"button\" class=\"btn btn-sm btn-warning\"  data-toggle=\"modal\" data-target=\"#modalchangeprice-" + 
+            + "<br><br> <i>Vous êtes sur place ? Le prix n'est pas le bon?</i> <br> <button type=\"button\" class=\"btn btn-sm btn-warning\"  data-toggle=\"modal\" data-target=\"#modalchangeprice\">Modifier le prix</button></p></div>");
         // infowindow.setContent(place.beerPrice);
         infowindow.open(map, this);
+
+        // console.log('ok');
+
+
+        // $('body').append('<div class="modal" tabindex="-1" role="dialog" id="modalchangeprice-' + place.id + ' ">' +
+        $('body').append('<div class="modal" tabindex="-1" role="dialog" id="modalchangeprice">' +
+            '<div class="modal-dialog" role="document">' +
+            '<div class="modal-content">' +
+            '<div class="modal-header">' +
+            '<h5 class="modal-title" id="text">Changer le prix de la pinte de bière chez ' + place.name + ' </h5>' +
+            // '<button id="closemodal" type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+            '<button id="closemodal" type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="removeModal()">' +
+            '<span aria-hidden="true">&times;</span>' +
+            '</button>' +
+            '</div>' +
+            '<form id="changebeerprice">' +
+            '<div class="modal-body">' +
+            '<input type="email" class="form-control" id="beerprice" placeholder="Entrer le nouveau prix">' +
+            '</div>' +
+            '<div class="modal-footer">' +
+            '<button type="submit" class="btn btn-primary">Enregister</button>' +
+            '</div>' +
+            '</form>' +
+            '</div>' +
+            '</div>' +
+            '</div>');
+
+        // $('.modal-backdrop, #closemodal').click(function () {
+        //     $('#modalchangeprice').remove();
+        //     $('.modal-backdrop').remove();
+        //     console.log('ok');
+        // });
+
+        // function removeModal() {
+        //     $('#modalchangeprice').remove();
+        //     // $('.modal-backdrop').remove();
+        //     console.log('ok');
+        // };
+
+    // }
+
     });
+
 }
+
+// $(".body").load(url, function() {
+//     $("#button").on("click", function(){
+//         var pageTo = this.name;
+//         loadPage("pages/" + pageTo + ".html");
+//     });
+// });
+
+// $('.modal-backdrop').click(function() {
+//     removeModal();
+// });
+
+function removeModal() {
+    // $('.modal-backdrop, #closemodal').click(function () {
+        $('#modalchangeprice').remove();
+       // $('.modal-backdrop').remove();
+        console.log('oustide');
+    // });
+
+}
+
+
+
+// MODALE DE CHANGEMENT DE PRIX DE LA PINTE DE BIERE
+$('#changebeerprice').on('shown.bs.modal', function () {
+    $('#beerprice').trigger('focus')
+})
+
+// SOCKET IO POUR CHANGER LE PRIX D'UNE PINTE DE BIERE
+$('#changebeerprice').submit(function (event) {
+    event.preventDefault();
+    // On génère un évenement "modifyprice" et on passe en paramètre
+    // le nouveau prix de la bière
+    socket.emit('modifyprice', {
+        beerprice: $('#beerprice').val()
+    });
+});
