@@ -49,7 +49,7 @@ var history = 2;
 // Quand il y a une connexion sur l'une des sockets = Quand un utilisateur ouvre la page
 io.sockets.on('connection', function (socket) {
     // Fonction qui prend en paramètre, la socket de l'utilisateur en cours
-    console.log('Un nouvel utilisateur à ouvert la page');
+    // console.log('Un nouvel utilisateur à ouvert la page');
 
     // Pour tous les utilisateurs déjà connectés et existant dans users
     // On emet l'évenement "newuser", qui va généré leur ajout visuellement dans la liste, coté client
@@ -68,7 +68,7 @@ io.sockets.on('connection', function (socket) {
     // Quand un utilisateur se connecte
     socket.on('login', function(user){
         // On récupère l'user qui vient de se connecter
-        console.log(user);
+        // console.log(user);
         currentUser = user;
         currentUser.id = user.email;
 
@@ -114,6 +114,35 @@ io.sockets.on('connection', function (socket) {
         }
         messages.push(message);
         io.sockets.emit('newmsgtodisplay', message);
-    })
+    });
+
+    
+    // MAP 
+
+    var currentBar = {};
+
+    // Quand un prix de bière est changé
+    socket.on('modifyprice', function(price){
+        // // On récupère le prix qui vient d'être modifié 
+        currentBar = price;
+        
+        // = {
+        //     price.barId : price.beerPrice
+        // }
+        // currentUser.id = user.email;
+        console.log(currentBar)
+
+        // On emet un évenement à tous les users pour dire que le prix à changé
+        io.sockets.emit('pricehaschanged', currentBar);
+
+        // // On rajoute l'user courrant dans la liste des users
+        // users[currentUser.id] = currentUser;
+        // // Broadcast permet de "prevenir" tous les socket connectés (tous les users) que l'évenement à eu lieu,
+        // // Sauf la socket courante :
+        // //socket.broadcast.emit('newuser');
+        // // Pour prévenir tout le monde, y compris la socket courante
+        // // io.sockets, car il recence tout les users actuellement connectés
+        // io.sockets.emit('newuser', currentUser);
+    });
 
 })
