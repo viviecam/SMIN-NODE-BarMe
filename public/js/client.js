@@ -1,6 +1,6 @@
 $(document).ready(function () {
     // On se connecte, depuis notre site, à socket io
-    var socket = io.connect('http://localhost:3124');
+    var socket = io.connect('http://localhost:3123');
 
     // Quand l'utilisateur soumet le formulaire de login
     $('#loginform').submit(function(event){

@@ -1,12 +1,3 @@
-// TUTO VIDEO 
-// var http = require('http');
-// var url = require('url');
-
-// serverBarNme = http.createServer(function(req,res) {
-    
-// });
-// FIN TUTO VIDEO
-
 var ejs = require('ejs');
 var express = require('express');
 var app = express();
@@ -34,7 +25,7 @@ app.use(function(req, res){
 
 
 // On déclare que le serveur écoute sur le port 3124
-serverBarMe.listen(3124);
+serverBarMe.listen(3123);
 
 
 

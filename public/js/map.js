@@ -17,7 +17,7 @@ var icons = {
 
 
 // On se connecte, depuis notre site, à socket io
-var socket = io.connect('http://localhost:3124');
+var socket = io.connect('http://localhost:3123');
 
 $(document).ready(function () {
     // On définie la taille de la carte, en fonction de la taille de la fenêtre
@@ -117,7 +117,7 @@ function createMarkerResults(place) {
         infowindow.setContent(
             '<div id="' + place.id + '"><h5><strong>' + place.name + '</strong></h5>' +
             '<p>' + place.vicinity + '<br>' +
-            '<h6>Pinte de bière : <span class="badge badge-info">' + place.beerPrice + '€</span></h6></p>'
+            '<h6>Pinte de bière : <span class="badge badge-info">' + place.beerPrice + ' €</span></h6></p>'
             // + "<br><br> <i>Vous êtes sur place ? Le prix n'est pas le bon?</i> <br> <button type=\"button\" class=\"btn btn-sm btn-warning\"  data-toggle=\"modal\" data-target=\"#modalchangeprice-" + 
             + '<p><br> <i>Vous êtes sur place ? Le prix n\'est pas le bon?</i> </p>'
             + '<form id="changebeerprice" class="form-inline">'
@@ -153,7 +153,7 @@ function createMarkerResults(place) {
             console.log(localResults[bar.barId]);
             // Et on modifie visuellement le prix dans la bulle d'info
             $('#' + bar.barId + ' span').empty();
-            $('#' + bar.barId + ' span').html(bar.newBeerPrice + '€');
+            $('#' + bar.barId + ' span').html(bar.newBeerPrice + ' €');
         });
 
         // $('body').append('<div class="modal" tabindex="-1" role="dialog" id="modalchangeprice-' + place.id + ' ">' +
