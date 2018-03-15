@@ -115,13 +115,13 @@ function createMarkerResults(place) {
     // Génération de la bulle d'info
     google.maps.event.addListener(marker, 'click', function () {
         infowindow.setContent(
-            '<div><h5><strong>' + place.name + '</strong></h5>' +
+            '<div id="' + place.id + '"><h5><strong>' + place.name + '</strong></h5>' +
             '<p>' + place.vicinity + '<br>' +
-            '<h6>Pinte de bière : <span class="badge badge-primary">' + place.beerPrice + '€</span></h6></p>'
+            '<h6>Pinte de bière : <span class="badge badge-info">' + place.beerPrice + '€</span></h6></p>'
             // + "<br><br> <i>Vous êtes sur place ? Le prix n'est pas le bon?</i> <br> <button type=\"button\" class=\"btn btn-sm btn-warning\"  data-toggle=\"modal\" data-target=\"#modalchangeprice-" + 
             + '<p><br> <i>Vous êtes sur place ? Le prix n\'est pas le bon?</i> </p>'
             + '<form id="changebeerprice" class="form-inline">'
-            + '<input type="text" class="form-control form-control-sm" id="beerprice" placeholder="Entrer le nouveau prix">'
+            + '<input type="number" step=".01" class="form-control form-control-sm mr-sm-2" id="beerprice" placeholder="Entrer le nouveau prix">'
             // + '<button class="btn btn-sm btn-warning">Modifier le prix</button>'
             + '<input type="submit" value="Modifier le prix" class="btn btn-sm btn-warning"/>'
             // <input type="submit" value="Join chat" class="btn btn-primary form-control">
@@ -140,8 +140,7 @@ function createMarkerResults(place) {
                 barId: place.id,
                 newBeerPrice: $('#beerprice').val()
             });
-            alert(place.id);
-            // Phenomen : afc8af6fbec127ab2899065f7f41b209e076a66d
+            // alert(place.id);
         });
 
         // Quand l'évenement "pricehaschanged" a lieu
@@ -152,6 +151,9 @@ function createMarkerResults(place) {
             // Et on modifie sa propriété beerPrice, en affectant la nouvelle valeur bar.newBeerPrice
             localResults[bar.barId].beerPrice = bar.newBeerPrice;
             console.log(localResults[bar.barId]);
+            // Et on modifie visuellement le prix dans la bulle d'info
+            $('#' + bar.barId + ' span').empty();
+            $('#' + bar.barId + ' span').html(bar.newBeerPrice + '€');
         });
 
         // $('body').append('<div class="modal" tabindex="-1" role="dialog" id="modalchangeprice-' + place.id + ' ">' +
