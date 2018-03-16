@@ -10,15 +10,15 @@ app.set('view engine', 'ejs');
 app.use('/public', express.static('public'));
 
 // Gestion des urls et des template ejs
-app.get('/login', function(req, res) {
+app.get('/login', function (req, res) {
     res.render('login.ejs');
 })
 
-app.get('/map', function(req, res) {
+app.get('/map', function (req, res) {
     res.render('map.ejs');
 })
 
-app.use(function(req, res){
+app.use(function (req, res) {
     res.setHeader('Content-Type', 'text/plain');
     res.status(404).send('Not Found');
 });
@@ -31,16 +31,167 @@ serverBarMe.listen(3123);
 
 // On lie socket au server, on lui dit d'ecouter les connexions au niveau de notre serveur
 var io = require('socket.io').listen(serverBarMe);
+
+/********** VARIABLES GLOBALES **********/
+
+/***** MAP *****/
+// Coordonnées du centre de la map
+// Par défaut, sur Grenoble, pour le chargement de l'appli
+var centerMap = { lat: 45.1885, lng: 5.7245 };
+
+// Stockage local des resultats de la recherche
+var localResults = {};
+// Icons pour les markers
+var icons = {
+    beer: 'public/img/beer-icon2.png',
+    user: 'public/img/emoji.png'
+};
+// Stockage local des prix des bars => Pour garantir la persistence des données
+var localBeerPrices = {};
+
+
+/***** CHAT *****/
 // Variable pour stocker les utilisateurs connectés
 var users = {};
 // Variable pour stocker les messages
 var messages = [];
 var history = 2;
 
+
 // Quand il y a une connexion sur l'une des sockets = Quand un utilisateur ouvre la page
+// Fonction qui prend en paramètre, la socket de l'utilisateur en cours
+// console.log('Un nouvel utilisateur à ouvert la page');
 io.sockets.on('connection', function (socket) {
-    // Fonction qui prend en paramètre, la socket de l'utilisateur en cours
-    // console.log('Un nouvel utilisateur à ouvert la page');
+
+    /***** MAP *****/
+
+    // On emet un évènement pour initialiser la carte, 
+    // en passant en paramètre les coordonnées du centre par défaut
+    socket.emit('initMap', centerMap);
+
+    // On initialise les bars sur la carte
+    // On définie la zone sur Grenoble
+    var greLoc = {
+        latitude: 45.1885,
+        longitude: 5.7245
+    }
+    // On emet un evenement pour initiliser les bars
+    socket.emit('initBars', greLoc);
+
+    // Quand les resultats ont bien été chargés
+    socket.on('resultsLoaded', function (results) {
+        // On stocke localement chaque résultat, pour pouvoir modifier les prix par la suite
+        for (var i = 0; i < results.length; i++) {
+            // On vient copier le resultat courant dans notre variable localResults
+            // En l'indexant, non pas avec i, mais avec l'id du bar
+            // pour permettre le changement de prix par la suite, en se basant sur l'id du bar
+            localResults[results[i].id] = results[i]
+            // console.log(i, localResults[results[i].id]);            
+        }
+
+        // PERSISTENCE DES DONNEES DE PRIX
+        // Pour chaque bar dont le prix à déjà été changé par un autre utilisateur qui s'est connecté avant
+        // On va aller rajouter la valeur du prix, dans notre stockage local des resultats
+        // pour le bar correspondant
+        for (var k in localBeerPrices) {
+            localResults[k].beerPrice = localBeerPrices[k]
+            // console.log(localResults[k])
+        }
+
+        // console.log(localBeerPrices)
+
+        // Pour chaque bar dans notre stockage local des resultats, auquel on vient de rajouter les prix
+        // On va emettre l'évenenement 'displayBar', qui va déclencher l'affichage du marker du bar courant
+        // Avec tous ses paramètres, y compris son prix, s'il à été ajouté 
+        for (var j in localResults) {
+            // On passe donc en paramètre le bar courant avec tous ses paramètres, et la liste des icones
+            socket.emit('displayBar', localResults[j], icons);
+        }
+
+
+    });
+
+    // Quand un prix de bière est changé par un utilisateur
+    socket.on('modifyprice', function (currentBar) {
+        // On stocke localement le nouveau prix pour le bar courant
+        // Pour garantir la persistence des données si un nouvel utilisateur se connecte après le changement
+        // console.log(currentBar) 
+        localBeerPrices[currentBar.barId] = currentBar.newBeerPrice;
+        // console.log(localBeerPrices)
+
+        // On l'ajoute aussi à notre stockage local des bars
+        // Pour que la nouvelle valeur du prix soit bien stockée (et affichée) pour l'utilisateur courant
+        localResults[currentBar.barId].beerPrice = currentBar.newBeerPrice;
+        // console.log(localResults[currentBar.barId])
+
+        // On emet l'évènement 'displayBar' à tous les utilisateurs
+        // qui va regénérer le marker et la bulle d'info du bar courant
+        // avec ses nouveaux paramètres, et donc son nouveau prix
+        // + la liste des icons
+        io.sockets.emit('displayBar', localResults[currentBar.barId], icons)
+
+        // Enfin, on emet un évènement pour dire que le prix à changé, en envoyant le bar courant et son nouveau prix
+        // On l'envoit à tous les utilisateur, car cela permet de changer visuellement le prix, si les autres users
+        // ont la bulle d'info du même bar, ouverte en même temps que l'utilisateur qui à changé le prix
+        io.sockets.emit('pricehaschanged', currentBar);
+
+
+        // = {
+        //     price.barId : price.beerPrice
+        // }
+        // currentUser.id = user.email;
+        // console.log(currentBar)
+
+        // // On emet un évenement à tous les users pour dire que le prix à changé
+        // io.sockets.emit('pricehaschanged', currentBar);
+
+        // // On rajoute l'user courrant dans la liste des users
+        // users[currentUser.id] = currentUser;
+        // // Broadcast permet de "prevenir" tous les socket connectés (tous les users) que l'évenement à eu lieu,
+        // // Sauf la socket courante :
+        // //socket.broadcast.emit('newuser');
+        // // Pour prévenir tout le monde, y compris la socket courante
+        // // io.sockets, car il recence tout les users actuellement connectés
+        // io.sockets.emit('newuser', currentUser);
+    });
+
+
+    // Si géolocalisation
+    socket.on('geolocUser', function (latitudeGeo, longitudeGeo) {
+        // console.log(latitudeGeo, longitudeGeo)
+        // On récupère les coordonnées de l'utilisateur, que l'on stocke dans notre variable pour centrer la carte
+        var userGeo = { lat: latitudeGeo, lng: longitudeGeo };
+        // On relance l'init de la map avec le nouveau centre, sur l'utilisateur
+        socket.emit('initMap', userGeo)
+        // On relance l'init des bars 
+        socket.emit('initBars', greLoc)
+        // On emet un evènement 'displayUser' pour afficher le marker de l'user
+        // On lui envoie les coordonnées de l'user, et la liste des icones
+        socket.emit('displayUser', userGeo, icons);
+    });
+
+
+
+
+    //         for (var i = 0; i < results.length; i++) {
+    //             //On stocke dans une variable local, les résultats, pour pouvoir changer le prix de la bière
+    //             localResults[results[i].id] = results[i];
+    //             // On initialise le prix de la pinte de bière
+    //             localResults[results[i].id].beerPrice = '3';
+    //             // Appel à la fonction pour créer un marker pour chaque bar trouvé
+    //             createMarkerResults(localResults[results[i].id]);
+    //             // console.log(results[i]);
+    //             // console.log(localResults[i]);
+    //         }
+    //         console.log(localResults);
+
+
+
+
+
+
+
+
 
     // Pour tous les utilisateurs déjà connectés et existant dans users
     // On emet l'évenement "newuser", qui va généré leur ajout visuellement dans la liste, coté client
@@ -57,7 +208,7 @@ io.sockets.on('connection', function (socket) {
     var currentUser = false;
 
     // Quand un utilisateur se connecte
-    socket.on('login', function(user){
+    socket.on('login', function (user) {
         // On récupère l'user qui vient de se connecter
         // console.log(user);
         currentUser = user;
@@ -77,7 +228,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     // Quand l'utilisateur se déconnecte / quitte la page
-    socket.on('disconnect', function(){
+    socket.on('disconnect', function () {
         // Pour être sur qu'un user ne puisse pas se deconnecter sans s'être préalablement connecté
         // Si je n'ai pas encore d'user dans mon currentUser (car l'user ne s'est pas encore connecté)
         if (!currentUser) {
@@ -90,7 +241,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     // Quand un message arrive
-    socket.on('newmsgarrived', function(message){
+    socket.on('newmsgarrived', function (message) {
         message.user = currentUser;
         date = new Date();
         message.hour = date.getHours();
@@ -107,33 +258,6 @@ io.sockets.on('connection', function (socket) {
         io.sockets.emit('newmsgtodisplay', message);
     });
 
-    
-    // MAP 
 
-    var currentBar = {};
-
-    // Quand un prix de bière est changé
-    socket.on('modifyprice', function(price){
-        // // On récupère le prix qui vient d'être modifié 
-        currentBar = price;
-        
-        // = {
-        //     price.barId : price.beerPrice
-        // }
-        // currentUser.id = user.email;
-        console.log(currentBar)
-
-        // On emet un évenement à tous les users pour dire que le prix à changé
-        io.sockets.emit('pricehaschanged', currentBar);
-
-        // // On rajoute l'user courrant dans la liste des users
-        // users[currentUser.id] = currentUser;
-        // // Broadcast permet de "prevenir" tous les socket connectés (tous les users) que l'évenement à eu lieu,
-        // // Sauf la socket courante :
-        // //socket.broadcast.emit('newuser');
-        // // Pour prévenir tout le monde, y compris la socket courante
-        // // io.sockets, car il recence tout les users actuellement connectés
-        // io.sockets.emit('newuser', currentUser);
-    });
 
 })
