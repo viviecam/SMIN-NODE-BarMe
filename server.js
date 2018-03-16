@@ -14,6 +14,10 @@ app.get('/login', function(req, res) {
     res.render('login.ejs');
 })
 
+app.get('/loginNmap', function(req, res) {
+    res.render('map.ejs');
+})
+
 app.get('/map', function(req, res) {
     res.render('map.ejs');
 })
@@ -105,6 +109,8 @@ io.sockets.on('connection', function (socket) {
         }
         messages.push(message);
         io.sockets.emit('newmsgtodisplay', message);
+
+
     });
 
     

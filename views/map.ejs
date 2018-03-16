@@ -13,6 +13,7 @@
   <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
   <!-- Socket io -->
   <script src="http://localhost:3123/socket.io/socket.io.js"></script>
+  <script type="text/javascript" src="/public/js/client.js"></script>
   <script type="text/javascript" src="/public/js/map.js"></script>
   <!-- Bootstrap -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
@@ -22,12 +23,69 @@
   <!-- API Google places -->
   <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAz6t2kVq4u6td1DyYlMP5-f57LdZJrV4w&libraries=places"></script>
 
+  <!-- Mustache -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.js"></script>
+
   <!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAz6t2kVq4u6td1DyYlMP5-f57LdZJrV4w&callback=initMap"> </script>-->
 
 </head>
 
 <body>
-  <div id="map"></div>
+  <section class="container-fluid">
+
+    <div class="login-overlay" id="logyou">
+      <form action="" id="loginform">
+        <div class="form-group">
+          <input type="text" name="pseudo" id="username" placeholder="Nom d'utilisateur" class="form-control">
+        </div>
+        <div class="form-group">
+          <input type="email" name="mail" id="email" placeholder="E-mail" class="form-control">
+        </div>
+        <input type="submit" value="Rejoindre le chat" class="btn btn-primary form-control" onclick="afficheChat();">
+      </form>
+    </div>
+
+
+    
+      
+ 
+      <!-- <div class="col-9"></div> -->
+      <div>
+        <button type="button" class="btn btn-light connecter" onclick="logyou();">Rejoindre le chat</button>
+      </div>
+      <div class="container lechat" id="chatWindow">
+        <div class="row lechatdim">
+          <div class="col-12">
+            <h3>Messages</h3>
+            <ul id="msglist" class="chat-container">
+              <li id="msgtpl" class="message" style="display: none;">
+                <div class="card">
+                  <div class="card-body">
+                    <p class="card-subtitle text-muted">{{user.username}} :</p>
+                    <p class="card-title mb-2 petit">{{message}}</p>
+                    <p class="toutPetit"><i>{{hour}}h{{min}}</i></p>
+                  </div>
+                </div>
+                <br/>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="row send-message">
+          <div class="col-12">
+            <form action="" id="msgform" class="form-inline"  autocomplete="off">
+              <div class="form-group">
+                <input type="text" id="messageinput" class="form-control" placeholder="Votre Message" />
+              </div>
+              <input type="submit" id="sendmsg" class="btn btn-primary" value="Send"  autocomplete="off"/>
+            </form>
+          </div>
+        </div>
+        
+    </div>
+
+  <div class="col-12" id="map"></div>
+</section>
 
 </body>
 
