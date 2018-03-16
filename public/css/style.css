@@ -101,6 +101,11 @@ body {
     font-size: small;
 }
 
+.titre {
+    margin-top: 1%;
+    margin-left: 1%;
+    text-transform: uppercase;
+}
 
 @media (min-width: 768px){
     .send-message .form-group {
