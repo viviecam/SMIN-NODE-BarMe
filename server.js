@@ -14,7 +14,15 @@ app.get('/login', function (req, res) {
     res.render('login.ejs');
 })
 
+<<<<<<< HEAD
 app.get('/map', function (req, res) {
+=======
+app.get('/loginNmap', function(req, res) {
+    res.render('map.ejs');
+})
+
+app.get('/map', function(req, res) {
+>>>>>>> 7225621aa35a0b7fdd9cbbd4abc27aadb5d01b28
     res.render('map.ejs');
 })
 
@@ -256,6 +264,8 @@ io.sockets.on('connection', function (socket) {
         }
         messages.push(message);
         io.sockets.emit('newmsgtodisplay', message);
+
+
     });
 
 

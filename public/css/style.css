@@ -6,16 +6,16 @@ body {
 }
 
 
-.container-fluid {
-	z-index: 1;
-}
-
 /*** MAP ***/
 #map {
     height: 400px;
     width: 100%;
+    z-index: 1;
 }
-
+.container-fluid{
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+ }
 
 /*** CHAT ***/
 .login-overlay {
@@ -25,12 +25,12 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
     display: table;
 	text-align: center;
-	z-index: 999;
+	z-index: 99;
     /* display: none; */
 }
 
 .login-overlay form {
-    display: table-cell;
+    margin-top: 10%;
     vertical-align: middle;
 }
 
@@ -47,6 +47,64 @@ body {
 	position: fixed;
     bottom: 0;
     width: 100%;
+}
+
+/* Enlever les puces des messages */
+#msglist{
+    list-style: none;
+}
+
+
+#logyou {
+    display: none;
+}
+
+.container.lechat{
+    z-index: 91;
+    position: absolute;
+    margin-left: 75%;
+    display: none;
+    overflow: hidden;
+
+}
+
+.chat-container {
+   height: 470px;
+  overflow: auto;
+}
+
+.chat-container .message {
+  /*border-bottom: solid 1px #ccc;*/
+  padding: 20px;
+  -webkit-transform: rotate(180deg);
+          transform: rotate(180deg);
+  direction: ltr;
+}
+
+.connecter{
+    z-index: 90;
+    position: absolute;
+    margin-top: 1%;
+    margin-left: 85%;
+
+}
+
+.lechatdim{
+    background: rgb(255, 255, 255);
+
+}
+
+.toutPetit {
+    font-size: x-small;
+}
+.petit {
+    font-size: small;
+}
+
+.titre {
+    margin-top: 1%;
+    margin-left: 1%;
+    text-transform: uppercase;
 }
 
 @media (min-width: 768px){

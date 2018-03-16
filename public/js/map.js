@@ -82,7 +82,7 @@ $(document).ready(function () {
                 // <input type="submit" value="Join chat" class="btn btn-primary form-control">
                 // + '<button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#modalchangeprice">Modifier le prix</button>'
                 + '</form></div>');
-            
+
             infowindow.open(map, this);
 
 
@@ -109,13 +109,15 @@ $(document).ready(function () {
             });
 
 
+            // // On initialise la map seule, centrée sur les coordonnées de Grenoble par défaut
+            // initMap(latitude, longitude);
+
+            // //On demande l'accès à la geolocalisaton de l'utilisateur
+            // updateGeolocalisation();
+
         });
 
     });
-
-
-
-
 
 
 
@@ -138,14 +140,19 @@ $(document).ready(function () {
             map: map,
             icon: icons['user']
         })
-    })
+    });
 
 
-    // // On initialise la map seule, centrée sur les coordonnées de Grenoble par défaut
-    // initMap(latitude, longitude);
 
-    // //On demande l'accès à la geolocalisaton de l'utilisateur
-    // updateGeolocalisation();
+    // FONCTION D'AFFICHAGE DE LA CONNECTION
+    function logyou() {
+        $("#logyou").show();
+    }
+
+    // FONCTION D'AFFICHAGE DU CHAT
+    function afficheChat() {
+        $(".container.lechat").show();
+    }
 
 });
 
