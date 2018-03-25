@@ -142,19 +142,19 @@ $(document).ready(function () {
         })
     });
 
-
-
-    // FONCTION D'AFFICHAGE DE LA CONNECTION
-    function logyou() {
-        $("#logyou").show();
-    }
-
-    // FONCTION D'AFFICHAGE DU CHAT
-    function afficheChat() {
-        $(".container.lechat").show();
-    }
-
 });
+
+
+// FONCTION D'AFFICHAGE DE LA CONNECTION
+function logyou() {
+    console.log('voila');
+    $("#logyou").show();
+}
+
+// FONCTION D'AFFICHAGE DU CHAT
+function afficheChat() {
+    $(".container.lechat").show();
+}
 
 // // FONCTION D'INITIALISATION DE LA MAP
 // function initMap(latitude, longitude) {
