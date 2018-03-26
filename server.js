@@ -78,7 +78,7 @@ io.sockets.on('connection', function (socket) {
     socket.emit('initBars', greLoc);
 
     // Quand les resultats ont bien été chargés
-    socket.on('resultsLoaded', function (results) {
+    socket.on('resultsLoaded', function resultsLoaded(results) {
         // On stocke localement chaque résultat, pour pouvoir modifier les prix par la suite
         for (var i = 0; i < results.length; i++) {
             // On vient copier le resultat courant dans notre variable localResults
@@ -107,7 +107,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     // Quand un prix de bière est changé par un utilisateur
-    socket.on('modifyprice', function (currentBar) {
+    socket.on('modifyprice', function modifyPrice(currentBar) {
         // On stocke localement le nouveau prix pour le bar courant
         // Pour garantir la persistence des données si un nouvel utilisateur se connecte après le changement
         localBeerPrices[currentBar.barId] = currentBar.newBeerPrice;
@@ -130,7 +130,7 @@ io.sockets.on('connection', function (socket) {
 
 
     // Si géolocalisation
-    socket.on('geolocUser', function (latitudeGeo, longitudeGeo) {
+    socket.on('geolocUser', function geolocUser(latitudeGeo, longitudeGeo) {
         // On récupère les coordonnées de l'utilisateur, que l'on stocke dans notre variable pour centrer la carte
         var userGeo = { lat: latitudeGeo, lng: longitudeGeo };
         // On relance l'init de la map avec le nouveau centre, sur l'utilisateur
@@ -160,7 +160,7 @@ io.sockets.on('connection', function (socket) {
     var currentUser = false;
 
     // Quand un utilisateur se connecte
-    socket.on('login', function (user) {
+    socket.on('login', function login(user) {
         // On récupère l'user qui vient de se connecter
         currentUser = user;
         currentUser.id = user.email;
@@ -179,7 +179,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     // Quand l'utilisateur se déconnecte / quitte la page
-    socket.on('disconnect', function () {
+    socket.on('disconnect', function disconnect() {
         // Pour être sur qu'un user ne puisse pas se deconnecter sans s'être préalablement connecté
         // Si je n'ai pas encore d'user dans mon currentUser (car l'user ne s'est pas encore connecté)
         if (!currentUser) {
@@ -192,7 +192,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     // Quand un message arrive
-    socket.on('newmsgarrived', function (message) {
+    socket.on('newmsgarrived', function newmsgarrived(message) {
         message.user = currentUser;
         date = new Date();
         message.hour = date.getHours();

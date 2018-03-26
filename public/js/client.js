@@ -14,7 +14,7 @@ $(document).ready(function () {
     });
 
     // Quand l'utilisateur est connecté, on fait disparaitre le formulaire de login
-    socket.on('logged', function(){
+    socket.on('logged', function logged(){
         $('.login-overlay').fadeOut();
         $('#messageinput').focus();
     });
@@ -22,13 +22,13 @@ $(document).ready(function () {
     /** GESTION DES USERS CONNECTES **/
 
     // Quand l'évenement "newuser" a lieu
-    socket.on('newuser', function(user){
+    socket.on('newuser', function newuser(user){
         //alert('Voila il y a un nouvel utilisateur!');
         $('#users').append('<li id = "'+ user.id +'">' + user.username + ' : ' + user.email + '</li>');
     });
 
     // Quand un utilisateur se déconnecte
-    socket.on('disconnectuser', function(user) {
+    socket.on('disconnectuser', function disconnectuser(user) {
         $('#' + user.id).remove();
     });
 
@@ -51,7 +51,7 @@ $(document).ready(function () {
     });
 
     // Quand un nouveau message arrive et doit être affiché
-    socket.on('newmsgtodisplay', function(message) {
+    socket.on('newmsgtodisplay', function newmsgtodisplay(message) {
         if (lastmsg != message.user.id) {
             $('#msglist').append('<hr>');
             lastmsg = message.user.id;

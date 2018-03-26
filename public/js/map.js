@@ -17,7 +17,7 @@ $(document).ready(function () {
 
     // Quand l'évènement 'initMap' à lieu 
     // (cf serveur : à l'ouverture d'une page par un user, event 'connection')
-    socket.on('initMap', function (center) {
+    socket.on('initMap', function initMap(center) {
         map = new google.maps.Map(document.getElementById('map'), {
             zoom: 15,
             center: center
@@ -26,7 +26,7 @@ $(document).ready(function () {
 
     // Quand l'évènement 'initBars' à lieu 
     // (cf serveur : à l'ouverture d'une page par un user, event 'connection')
-    socket.on('initBars', function (greLoc) {
+    socket.on('initBars', function initBars(greLoc) {
         // On initialise le lieu pour la recherche (grenoble), envoyé depuis le serveur
         var gre = new google.maps.LatLng(greLoc.latitude, greLoc.longitude);
         // On initialise les bulles d'infos
@@ -52,7 +52,7 @@ $(document).ready(function () {
     // Quand l'évènement 'displayBar' à lieu 
     // (cf serveur : une fois que les resultats on été chargés, event 'resultsLoaded')
     // Cet évènement est donc généré pour chaque résultats
-    socket.on('displayBar', function (place, icons) {
+    socket.on('displayBar', function displayBar(place, icons) {
         // On affiche le marker correspondant au bar courant
         var placeLoc = place.geometry.location;
         var marker = new google.maps.Marker({
@@ -96,7 +96,7 @@ $(document).ready(function () {
             });
 
             // Quand l'évenement "pricehaschanged" a lieu
-            socket.on('pricehaschanged', function (bar) {
+            socket.on('pricehaschanged', function pricehaschanged(bar) {
                 // On modifie visuellement le prix dans la bulle d'info
                 $('#' + bar.barId + ' span').empty();
                 $('#' + bar.barId + ' span').html(bar.newBeerPrice);
@@ -112,7 +112,7 @@ $(document).ready(function () {
     // Si l'utilisateur nous à donné accès à sa localisation
     if (navigator.geolocation) {
         // On récupère les coordonnées de l'utilisateur
-        navigator.geolocation.getCurrentPosition(function (position) {
+        navigator.geolocation.getCurrentPosition(function geoloc(position) {
             var latitudeGeo = position.coords.latitude;
             var longitudeGeo = position.coords.longitude;
             // On emet un évènement 'geolocUser' en envoyant les paramètres de latitude et de longitude
@@ -120,7 +120,7 @@ $(document).ready(function () {
         });
     }
 
-    socket.on('displayUser', function (user, icons) {
+    socket.on('displayUser', function displayUser(user, icons) {
         var marker = new google.maps.Marker({
             position: user,
             map: map,
